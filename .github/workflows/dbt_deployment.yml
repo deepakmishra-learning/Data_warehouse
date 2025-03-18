@@ -3,14 +3,14 @@ name: DBT CI/CD Pipeline
 on:
   push:
     branches:
-      - main  # This can be your main or production branch
+      - main
   pull_request:
     branches:
-      - main  # Trigger on PRs to main
+      - main
 
 jobs:
   dbt:
-    runs-on: ubuntu-latest  # This defines the virtual environment
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -18,24 +18,37 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x'  # You can specify your preferred Python version
+          python-version: '3.x'
 
       - name: Install dependencies
         run: |
-         #pip install -r requirements.txt  # Install necessary DBT packages and dependencies
-          pip install dbt
+          #pip install -r requirements.txt  # Install any Python dependencies
+          pip install dbt-snowflake  # Install DBT for Snowflake
 
       - name: Set up Snowflake credentials
         run: |
-          export SNOWFLAKE_USER="DEEPAKMISHRA"  # Replace with your Snowflake user
-          export SNOWFLAKE_PASSWORD="Arvind19691998"  # Replace with your Snowflake password
-          export SNOWFLAKE_ACCOUNT="QKTSPVQ-THB27726"  # Replace with your Snowflake account
-          export SNOWFLAKE_ROLE="DBT_ROLE"  # Replace with your Snowflake role
-          export SNOWFLAKE_DATABASE="DBT_DB"  # Replace with your Snowflake database
-          export SNOWFLAKE_SCHEMA="DBT_SCHEMA"  # Replace with your Snowflake schema
-          export SNOWFLAKE_WAREHOUSE="DBT_WH"  # Replace with your Snowflake warehouse
+          # Create the .dbt directory and the profiles.yml file
+          mkdir -p ~/.dbt
+          
+          # Write the DBT profile configuration with Snowflake credentials
+          echo "
+          default:
+            target: dev
+            outputs:
+              dev:
+                type: snowflake
+                account: your_snowflake_account
+                user: your_snowflake_user
+                password: your_snowflake_password
+                role: your_snowflake_role
+                database: your_snowflake_database
+                warehouse: your_snowflake_warehouse
+                schema: your_snowflake_schema
+                threads: 1
+                client_session_keep_alive: False
+          " > ~/.dbt/profiles.yml  # Write the profiles.yml to the expected directory
 
       - name: Run DBT commands
         run: |
-          dbt run  # This will run your DBT models
-          dbt test  # This will run your DBT tests (optional but recommended)
+          dbt run  # Run your DBT models
+          dbt test  # Run DBT tests (optional but recommended)
