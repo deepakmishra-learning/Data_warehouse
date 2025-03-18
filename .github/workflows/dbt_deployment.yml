@@ -32,7 +32,7 @@ jobs:
           
           # Write the DBT profile configuration with Snowflake credentials
           echo "
-          default:
+          data_pipeline:
             target: dev
             outputs:
               dev:
