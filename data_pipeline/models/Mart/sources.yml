@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: DEV_LAKE_LENS
+    database: DEV_LAKE_LENS
+    schema: CAPS
+    tables:
+      - name: DEALERSHIP_AFFILIATES
+        description: "The table storing information about dealership affiliates."
+        
+      - name: AFFILIATES
+        description: "The table storing affiliate information."
