@@ -1,0 +1,40 @@
+name: DBT CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main  # This can be your main or production branch
+  pull_request:
+    branches:
+      - main  # Trigger on PRs to main
+
+jobs:
+  dbt:
+    runs-on: ubuntu-latest  # This defines the virtual environment
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'  # You can specify your preferred Python version
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt  # Install necessary DBT packages and dependencies
+
+      - name: Set up Snowflake credentials
+        run: |
+          export SNOWFLAKE_USER="DEEPAKMISHRA"  # Replace with your Snowflake user
+          export SNOWFLAKE_PASSWORD="Arvind19691998"  # Replace with your Snowflake password
+          export SNOWFLAKE_ACCOUNT="QKTSPVQ-THB27726"  # Replace with your Snowflake account
+          export SNOWFLAKE_ROLE="DBT_ROLE"  # Replace with your Snowflake role
+          export SNOWFLAKE_DATABASE="DBT_DB"  # Replace with your Snowflake database
+          export SNOWFLAKE_SCHEMA="DBT_SCHEMA"  # Replace with your Snowflake schema
+          export SNOWFLAKE_WAREHOUSE="DBT_WH"  # Replace with your Snowflake warehouse
+
+      - name: Run DBT commands
+        run: |
+          dbt run  # This will run your DBT models
+          dbt test  # This will run your DBT tests (optional but recommended)
