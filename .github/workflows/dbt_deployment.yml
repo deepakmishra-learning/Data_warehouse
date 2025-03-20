@@ -55,4 +55,5 @@ jobs:
       - name: Run DBT commands
         run: |
           dbt run  # Run your DBT models
+          dbt snapshot #Running the snapshots
           dbt test  # Run DBT tests (optional but recommended)
