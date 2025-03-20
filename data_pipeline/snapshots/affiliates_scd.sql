@@ -1,0 +1,25 @@
+{% snapshot affiliates_scd %}
+
+{{
+    config(
+        target_schema = "CAPS",
+        target_database = "DBT_DB",
+        unique_key = "DEALERSHIP_AFFILIATES_ID",
+        strategy='check',
+        check_cols=['AFFILIATE_ID', 'DEALERSHIP_ID', 'EXTERNAL_ID', 'DESCRIPTION', 'AFFILIATE_NAME']
+    )
+}}
+
+SELECT
+    DLRSHP_AFFLATS.ID AS DEALERSHIP_AFFILIATES_ID,
+    DLRSHP_AFFLATS.AFFILIATE_ID,
+    DLRSHP_AFFLATS.DEALERSHIP_ID,
+    DLRSHP_AFFLATS.EXTERNAL_ID,
+    AFFLATS.DESCRIPTION,
+    AFFLATS.NAME AS AFFILIATE_NAME,
+    DLRSHP_AFFLATS.updated_at
+FROM {{ source("CAPS", "DEALERSHIP_AFFILIATES") }} AS DLRSHP_AFFLATS
+LEFT JOIN {{ source("CAPS", "AFFILIATES") }} AS AFFLATS
+    ON DLRSHP_AFFLATS.AFFILIATE_ID = AFFLATS.ID
+
+{% endsnapshot %}
