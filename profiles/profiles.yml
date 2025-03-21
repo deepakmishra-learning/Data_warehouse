@@ -1,4 +1,4 @@
-/*data_pipeline:
+data_pipeline:
   outputs:
     dev:
       account: QKTSPVQ-THB27726
@@ -10,35 +10,4 @@
       type: snowflake
       user: DEEPAKMISHRA
       warehouse: DBT_WH
-  target: dev
-*/
-data_pipeline:
-  target: dev
-  outputs:
-    dev:
-      type: snowflake
-      account: your_snowflake_account
-      user: your_snowflake_user
-      password: your_snowflake_password
-      role: your_snowflake_role
-      database: your_snowflake_database
-      warehouse: your_snowflake_warehouse
-      schema: your_snowflake_schema
-      threads: 1
-      client_session_keep_alive: False
-
-lens_project:
-  outputs:
-    dev:
-      account: OKOGVXX-PRODUCTION
-      client_session_keep_alive: false
-      database: DEV_LAKE_LENS
-      password: BN@th1969
-      query_tag: dbt
-      role: LENS_DEV_ROLE
-      schema: CAPS
-      threads: 4
-      type: snowflake
-      user: DEV__DEEPAKMISHRA
-      warehouse: LENS_WH
   target: dev

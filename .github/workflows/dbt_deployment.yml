@@ -3,10 +3,10 @@ name: DBT CI/CD Pipeline
 on:
   push:
     branches:
-      - main
+      - dev-branch
   pull_request:
     branches:
-      - main
+      - dev-branch
 
 jobs:
   dbt:
@@ -41,13 +41,13 @@ jobs:
             outputs:
               dev:
                 type: snowflake
-                account: your_snowflake_account
-                user: your_snowflake_user
-                password: your_snowflake_password
-                role: your_snowflake_role
-                database: your_snowflake_database
-                warehouse: your_snowflake_warehouse
-                schema: your_snowflake_schema
+                account: snowflake_account
+                user: snowflake_user
+                password: snowflake_password
+                role: snowflake_role
+                database: snowflake_database
+                warehouse: snowflake_warehouse
+                schema: snowflake_schema
                 threads: 1
                 client_session_keep_alive: False
           " > ~/.dbt/profiles.yml  # Write the profiles.yml to the expected directory
