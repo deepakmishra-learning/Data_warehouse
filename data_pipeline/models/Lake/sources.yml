@@ -18,3 +18,12 @@ sources:
               - relationships:
                   to: source('tpch', 'orders')
                   field: o_orderkey
+  - name: DBT_DB
+    database: DBT_DB
+    schema: CAPS
+    tables:
+      - name: DEALERSHIP_AFFILIATES1
+        description: "The table storing information about dealership affiliates."
+        
+      - name: AFFILIATES1
+        description: "The table storing affiliate information."

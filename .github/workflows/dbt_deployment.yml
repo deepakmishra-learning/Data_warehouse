@@ -1,0 +1,105 @@
+name: DBT CI/CD Pipeline
+
+on:
+  push:
+    branches: [dev-branch]
+  pull_request:
+    branches: [dev-branch]
+
+jobs:
+  dbt:
+    runs-on: ubuntu-22.04  # Explicitly use Ubuntu 22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Add it HERE (right after checkout)
+      - name: Verify Project Structure
+        run: |
+          echo "=== Project Contents ==="
+          ls -la
+          echo "=== Snapshots Directory ==="
+          ls -la snapshots/
+
+      - name: Set up Python 3.10  # Updated Python version
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libffi-dev \
+            openssl \
+            libssl-dev \
+            gcc \
+            python3-dev \
+            build-essential
+
+      - name: Create virtual environment
+        run: |
+          python -m venv venv
+          echo "VENV_PATH=$PWD/venv" >> $GITHUB_ENV
+
+      - name: Install cryptographic packages
+        run: |
+          source $VENV_PATH/bin/activate
+          pip install --upgrade pip setuptools wheel
+          pip install \
+            pyopenssl==23.2.0 \
+            cryptography==41.0.4 \
+            cffi==1.15.1 \
+            --no-binary :all:
+
+      - name: Install dbt-snowflake
+        run: |
+          source $VENV_PATH/bin/activate
+          pip install dbt-snowflake==1.3.0
+          dbt deps
+
+      - name: Verify crypto setup
+        run: |
+          source $VENV_PATH/bin/activate
+          python -c "import ssl; print(f'OpenSSL Version: {ssl.OPENSSL_VERSION}')"
+          python -c "from cryptography.hazmat.backends.openssl import backend; print(f'Cryptography Backend: {backend.openssl_version_text()}')"
+
+      - name: Configure profiles
+        run: |
+          mkdir -p ~/.dbt
+          cat > ~/.dbt/profiles.yml <<EOF
+          data_pipeline:
+            target: dev
+            outputs:
+              dev:
+                type: snowflake
+                account: "${{ secrets.LENS_SNOWFLAKE_ACCOUNT }}"
+                user: "${{ secrets.LENS_SNOWFLAKE_USER }}"
+                password: "${{ secrets.LENS_SNOWFLAKE_PASSWORD }}"
+                role: "${{ secrets.LENS_SNOWFLAKE_ROLE }}"
+                database: "${{ secrets.LENS_SNOWFLAKE_DATABASE }}"
+                warehouse: "${{ secrets.LENS_SNOWFLAKE_WAREHOUSE }}"
+                schema: "${{ secrets.LENS_SNOWFLAKE_SCHEMA }}"
+                threads: 4
+                client_session_keep_alive: false
+          EOF
+          cat ~/.dbt/profiles.yml
+
+      - name: Test connection
+        run: |
+          source $VENV_PATH/bin/activate
+          dbt debug --target dev
+
+      - name: Run DBT
+        if: success()
+        run: |
+          source $VENV_PATH/bin/activate
+          # dbt run --target dev
+          dbt snapshot --target dev
+          # dbt test --target dev
+
+          # Add artifact debugging HERE
+          echo "=== Artifact Debug ==="
+          find target/compiled -name "*.sql" | xargs -I {} sh -c 'echo "File: {}"; cat {}'
+          cat target/run_results.json | jq '.results[] | {model_name: .unique_id, status: .status}'
+          

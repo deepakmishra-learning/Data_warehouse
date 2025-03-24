@@ -22,6 +22,8 @@ target-path: "target"
 clean-targets: ["target"]
 
 require-dbt-version: ">=1.0.0" 
+
+
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 
@@ -39,3 +41,4 @@ models:
     Mart:
       +materialized: table
       snowflake_warehouse: dbt_wh
+
