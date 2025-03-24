@@ -4,7 +4,7 @@
 # name or the intended use of these models
 name: 'data_pipeline'
 version: '1.0.0'
-
+config-version: 2
 # This setting configures which "profile" dbt uses for this project.
 profile: 'data_pipeline'
 
@@ -18,9 +18,10 @@ seed-paths: ["seeds"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
 
-clean-targets:         # directories to be removed by `dbt clean`
-  - "target"
-  - "dbt_packages"
+target-path: "target"
+clean-targets: ["target"]
+
+require-dbt-version: ">=1.0.0" 
 
 
 # Configuring models
