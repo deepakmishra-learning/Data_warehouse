@@ -58,3 +58,4 @@ jobs:
           dbt run --target dev
           dbt snapshot --target dev
           dbt test --target dev
+          
