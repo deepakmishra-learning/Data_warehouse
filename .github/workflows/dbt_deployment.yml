@@ -13,6 +13,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Add it HERE (right after checkout)
+      - name: Verify Project Structure
+        run: |
+          echo "=== Project Contents ==="
+          ls -la
+          echo "=== Snapshots Directory ==="
+          ls -la snapshots/
+
       - name: Set up Python 3.10  # Updated Python version
         uses: actions/setup-python@v4
         with:
