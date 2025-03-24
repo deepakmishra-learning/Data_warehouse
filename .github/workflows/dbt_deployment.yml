@@ -20,11 +20,23 @@ jobs:
         with:
           python-version: '3.8'
       
-      - name: Install Snowflake dependencies
+      - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libffi-dev openssl
-          pip install --upgrade pyopenssl cryptography
+          sudo apt-get install -y \
+            libffi-dev \
+            openssl \
+            libssl-dev \
+            gcc \
+            python3-dev
+          
+      - name: Install cryptographic packages
+        run: |
+          pip install --upgrade \
+            pyopenssl==22.1.0 \
+            cffi==1.15.1
+          pip uninstall -y cryptography
+          pip install --no-binary cryptography cryptography==38.0.4
 
       - name: Install dependencies
         run: |
