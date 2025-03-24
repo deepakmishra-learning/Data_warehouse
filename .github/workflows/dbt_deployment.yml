@@ -89,4 +89,9 @@ jobs:
           # dbt run --target dev
           dbt snapshot --target dev
           # dbt test --target dev
+
+          # Add artifact debugging HERE
+          echo "=== Artifact Debug ==="
+          find target/compiled -name "*.sql" | xargs -I {} sh -c 'echo "File: {}"; cat {}'
+          cat target/run_results.json | jq '.results[] | {model_name: .unique_id, status: .status}'
           
