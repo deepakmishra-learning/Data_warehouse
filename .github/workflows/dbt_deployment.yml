@@ -1,14 +1,23 @@
+name: DBT CI/CD Pipeline
+
+on:
+  push:
+    branches: [dev-branch]
+  pull_request:
+    branches: [dev-branch]
+
 jobs:
   dbt:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04  # Explicitly use Ubuntu 22.04
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Set up Python
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10  # Updated Python version
         uses: actions/setup-python@v4
         with:
-          python-version: '3.8'
-          
+          python-version: '3.10'
+
       - name: Install system dependencies
         run: |
           sudo apt-get update
@@ -17,23 +26,40 @@ jobs:
             openssl \
             libssl-dev \
             gcc \
-            python3-dev
-          
+            python3-dev \
+            build-essential
+
+      - name: Create virtual environment
+        run: |
+          python -m venv venv
+          echo "VENV_PATH=$PWD/venv" >> $GITHUB_ENV
+
       - name: Install cryptographic packages
         run: |
-          pip install --upgrade \
-            pyopenssl==22.1.0 \
-            cffi==1.15.1
-          pip uninstall -y cryptography
-          pip install --no-binary cryptography cryptography==38.0.4
+          source $VENV_PATH/bin/activate
+          pip install --upgrade pip setuptools wheel
+          pip install \
+            pyopenssl==23.2.0 \
+            cryptography==41.0.4 \
+            cffi==1.15.1 \
+            --no-binary :all:
 
       - name: Install dbt-snowflake
-        run: pip install dbt-snowflake==1.3.0
+        run: |
+          source $VENV_PATH/bin/activate
+          pip install dbt-snowflake==1.3.0
 
       - name: Install DBT packages
-        run: dbt deps  # Critical - installs packages.yml dependencies
+        run: |
+          dbt deps  # This must run AFTER dbt-snowflake is installed
 
-      - name: Set up Snowflake credentials
+      - name: Verify crypto setup
+        run: |
+          source $VENV_PATH/bin/activate
+          python -c "import ssl; print(f'OpenSSL Version: {ssl.OPENSSL_VERSION}')"
+          python -c "from cryptography.hazmat.backends.openssl import backend; print(f'Cryptography Backend: {backend.openssl_version_text()}')"
+
+      - name: Configure profiles
         run: |
           mkdir -p ~/.dbt
           cat > ~/.dbt/profiles.yml <<EOF
@@ -52,9 +78,17 @@ jobs:
                 threads: 4
                 client_session_keep_alive: false
           EOF
+          cat ~/.dbt/profiles.yml
 
-      - name: Run DBT commands
+      - name: Test connection
         run: |
+          source $VENV_PATH/bin/activate
+          dbt debug --target dev
+
+      - name: Run DBT
+        if: success()
+        run: |
+          source $VENV_PATH/bin/activate
           dbt run --target dev
           dbt snapshot --target dev
           dbt test --target dev
