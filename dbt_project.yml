@@ -42,5 +42,5 @@ models:
 
 snapshots:
   data_pipeline:
-    +schema: snapshot
+    +schema: CAPS
     +target_database: DBT_DB
