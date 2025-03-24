@@ -49,6 +49,15 @@ jobs:
                 client_session_keep_alive: false
           EOF
 
+      - name: Debug Configuration
+        run: |
+          echo "=== profiles.yml content ==="
+          cat ~/.dbt/profiles.yml
+          echo "=== Secrets Verification ==="
+          echo "Account: ${{ secrets.SNOWFLAKE_ACCOUNT != '' }}"
+          echo "User: ${{ secrets.SNOWFLAKE_USER != '' }}"
+          echo "Password: ${{ secrets.SNOWFLAKE_PASSWORD != '' }}"
+
       - name: Verify connection
         run: |
           dbt debug --target dev
@@ -58,4 +67,3 @@ jobs:
           dbt run --target dev
           dbt snapshot --target dev
           dbt test --target dev
-          
