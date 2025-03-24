@@ -39,8 +39,3 @@ models:
     Mart:
       +materialized: table
       snowflake_warehouse: dbt_wh
-
-snapshots:
-  data_pipeline:
-    +schema: CAPS
-    +target_database: DBT_DB

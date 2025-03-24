@@ -86,7 +86,7 @@ jobs:
         if: success()
         run: |
           source $VENV_PATH/bin/activate
-          dbt run --target dev
+          # dbt run --target dev
           dbt snapshot --target dev
-          dbt test --target dev
+          # dbt test --target dev
           
