@@ -1,13 +1,14 @@
 data_pipeline:
+  target: dev
   outputs:
     dev:
-      account: QKTSPVQ-THB27726
-      database: DBT_DB
-      password: Arvind19691998
-      role: DBT_ROLE
-      schema: DBT_SCHEMA
-      threads: 6
       type: snowflake
-      user: DEEPAKMISHRA
-      warehouse: DBT_WH
-  target: dev
+      account: "{{ secrets.SNOWFLAKE_ACCOUNT }}"  # Must be string
+      user: "{{ secrets.SNOWFLAKE_USER }}"        # Must be string
+      password: "{{ secrets.SNOWFLAKE_PASSWORD }}"# Must be string
+      role: "{{ secrets.SNOWFLAKE_ROLE }}"        # Must be string
+      database: "{{ secrets.SNOWFLAKE_DATABASE }}"# Must be string
+      warehouse: "{{ secrets.SNOWFLAKE_WAREHOUSE }}" # Must be string
+      schema: "{{ secrets.SNOWFLAKE_SCHEMA }}"    # Must be string
+      threads: 4
+      client_session_keep_alive: False
