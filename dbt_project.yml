@@ -39,3 +39,8 @@ models:
     Mart:
       +materialized: table
       snowflake_warehouse: dbt_wh
+
+snapshots:
+  data_pipeline:
+    +schema: snapshot
+    +target_database: DBT_DB
