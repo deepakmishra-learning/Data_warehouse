@@ -38,13 +38,13 @@ jobs:
             outputs:
               dev:
                 type: snowflake
-                account: "${{ secrets.SNOWFLAKE_ACCOUNT }}"
-                user: "${{ secrets.SNOWFLAKE_USER }}"
-                password: "${{ secrets.SNOWFLAKE_PASSWORD }}"
-                role: "${{ secrets.SNOWFLAKE_ROLE }}"
-                database: "${{ secrets.SNOWFLAKE_DATABASE }}"
-                warehouse: "${{ secrets.SNOWFLAKE_WAREHOUSE }}"
-                schema: "${{ secrets.SNOWFLAKE_SCHEMA }}"
+                account: "${{ secrets.LENS_SNOWFLAKE_ACCOUNT }}"
+                user: "${{ secrets.LENS_SNOWFLAKE_USER }}"
+                password: "${{ secrets.LENS_SNOWFLAKE_PASSWORD }}"
+                role: "${{ secrets.LENS_SNOWFLAKE_ROLE }}"
+                database: "${{ secrets.LENS_SNOWFLAKE_DATABASE }}"
+                warehouse: "${{ secrets.LENS_SNOWFLAKE_WAREHOUSE }}"
+                schema: "${{ secrets.LENS_SNOWFLAKE_SCHEMA }}"
                 threads: 4
                 client_session_keep_alive: false
           EOF
@@ -54,9 +54,9 @@ jobs:
           echo "=== profiles.yml content ==="
           cat ~/.dbt/profiles.yml
           echo "=== Secrets Verification ==="
-          echo "Account: ${{ secrets.SNOWFLAKE_ACCOUNT != '' }}"
-          echo "User: ${{ secrets.SNOWFLAKE_USER != '' }}"
-          echo "Password: ${{ secrets.SNOWFLAKE_PASSWORD != '' }}"
+          echo "Account: ${{ secrets.LENS_SNOWFLAKE_ACCOUNT != '' }}"
+          echo "User: ${{ secrets.LENS_SNOWFLAKE_USER != '' }}"
+          echo "Password: ${{ secrets.LENS_SNOWFLAKE_PASSWORD != '' }}"
 
       - name: Verify connection
         run: |
